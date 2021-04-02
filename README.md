@@ -11,5 +11,6 @@ Mysql
 Ligaya Herndon
 
 # Screen shot
+<img src="Ecommerce.png" alt="EcommerceScreenshot">
 
 # Demo 
