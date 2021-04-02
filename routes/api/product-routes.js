@@ -9,7 +9,8 @@ router.get('/', async (req, res) => {
   // be sure to include its associated Category and Tag data
   try {
     const productsData = await Product.findAll({
-      include: [{ model: Tag }, { model: Category }],
+      attributes: ['id', 'product_name', 'price', 'stock'],
+      include: [{model: Category, attributes:['category_name']}, {model: Tag, attributes:['tag_name']}]
     });
     res.status(200).json(productsData);
   } catch (err) {
@@ -48,7 +49,13 @@ router.post('/', (req, res) => {
       tagIds: [1, 2, 3, 4]
     }
   */
-  Product.create(req.body)
+  Product.create({
+    product_name: req.body.product_name,
+    price: req.body.price,
+    stock: req.body.stock,
+    tagIds: req.body.tagIds,
+    category_id: req.body.category_id
+  })
     .then((product) => {
       // if there's product tags, we need to create pairings to bulk create in the ProductTag model
       if (req.body.tagIds.length) {
@@ -71,7 +78,7 @@ router.post('/', (req, res) => {
 });
 
 // update product
-router.put('/:id', (req, res) => {
+router.put('/:id', async(req, res) => {
   // update product data
     // find all associated tags from ProductTag
   Product.update(req.body, {
@@ -123,7 +130,7 @@ router.delete('/:id', async (req, res) => {
     });
 
     if (!productData) {
-      res.status(404).json({ message: "No products found with that id!" });
+      res.status(404).json({ message: "No products found!" });
       return;
     }
     res.status(200).json(productData);
